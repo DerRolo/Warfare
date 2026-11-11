@@ -1,6 +1,15 @@
 <title>Warfare</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Warfare 1917 – Grabenkrieg-Strategie im Browser">
+<meta name="theme-color" content="#12110d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Warfare">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&family=Stardos+Stencil:wght@400;700&display=swap">
@@ -2174,10 +2183,23 @@ function reset(){
   const nt=Math.min(maxT(),Math.max(Math.min(OPT.trench,Math.floor((hi-lo)/280)-1),Math.min(OPT.trench,1)));
   mapTheme=OPT.theme!=null?OPT.theme:(campBattle==null?[0,0,1,2,3,5][Math.floor(Math.random()*6)]:0);
   {let fr=OPT.tl&&OPT.tl.length?OPT.tl.slice(0,maxT()):null;
-  if(!fr){fr=[];for(let i=0;i<nt;i++)fr.push((i+1)/(nt+1));
-    for(let i=0;i<nt;i++)fr[i]=clamp(fr[i]+rnd(-.2,.2)*(nt===1?1.3:1),.14,.86);
-    fr.sort((a,b)=>a-b);for(let i=1;i<nt;i++)if(fr[i]-fr[i-1]<.2)fr[i]=fr[i-1]+.2;
-    if(nt&&fr[nt-1]>.88){const sh=fr[nt-1]-.88;for(let i=0;i<nt;i++)fr[i]-=sh;}}
+  if(!fr){
+    /* zufaellige Verteilung statt symmetrischem Raster: Mindestabstand, mal naeher an einer Seite, mal an beiden Spawns */
+    const gap=Math.min(.2,.72/Math.max(nt,1)),mode=Math.random();
+    const pick=()=>{const r=Math.random();
+      if(mode<.3)return rnd(.12,.88);
+      if(mode<.5)return rnd(.12,.5);
+      if(mode<.7)return rnd(.5,.88);
+      if(mode<.85)return r<.5?rnd(.12,.4):rnd(.6,.88);
+      return r<.6?rnd(.12,.45):rnd(.45,.88);};
+    for(let tries=0;tries<80;tries++){
+      fr=[];
+      for(let i=0;i<nt;i++){let ok=false,f=0;for(let k=0;k<40&&!ok;k++){f=pick();ok=fr.every(q=>Math.abs(q-f)>=gap);if(!ok&&k>20)f=rnd(.12,.88),ok=fr.every(q=>Math.abs(q-f)>=gap);}if(!ok)break;fr.push(f);}
+      if(fr.length===nt)break;fr=null;
+    }
+    if(!fr){fr=[];for(let i=0;i<nt;i++)fr.push(clamp((i+1)/(nt+1)+rnd(-.1,.1),.14,.86));}
+    fr.sort((a,b)=>a-b);
+  }
   for(const f of fr)trenches.push(mkTrench(Math.round(lo+f*(hi-lo)),null,true));}
   const wl=OPT.wl,nb=wl?wl.length:Math.min(OPT.wire,Math.floor(maxW()/5));
   for(let i=0;i<nb;i++){
@@ -3035,13 +3057,19 @@ function aiThink(dt){
       }
     }
   }
+  /* Notlage: Gegner steht nah an der eigenen Basis bzw. wir haben (fast) nichts mehr auf dem Feld -> nicht auf Teures sparen, sofort verteidigen */
+  let danger=false;
+  {let dmin=1e9;for(const u of units)if(u.team!==me&&u.hp>0)dmin=Math.min(dmin,Math.abs(u.x-B.front));
+   const span=Math.abs(bases[PL].front-B.front);
+   danger=dmin<1e9&&(dmin<span*.38||(dmin<span*.62&&cnt<=2)||(cnt===0&&dmin<span*.8));}
+  if(danger){ai.sv=null;if(ai.saving){ai.saving=false;ai.lastTank=t-60;}ai.dangerT=t;}
   if(ai.sv&&cnt>=8)return;
   const tk=SQ.tank,tkCost=sqOf('tank',me).cost;
   const tkAlive=units.filter(u=>u.team===me&&u.role==='tank'&&u.hp>0).length+queue.filter(q=>q.team===me&&q.role==='tank').length;
   /* Panzer-Wunsch richtet sich nach der Lage: wenige erlaubte Einheitenarten (z. B. nur MG + Panzer) und ein gegnerischer Panzer erhöhen Zahl und Kaufbereitschaft */
   const foeTk=units.filter(u=>u.team!==me&&u.hp>0&&u.role==='tank').length,kinds=SQ_ORDER.filter(k=>k!=='tank'&&enabled(k,me)).length,scarce=kinds<=3;
   const tcap=1+Math.floor(t/420)+(scarce?2:0)+(foeTk>tkAlive?1:0),tgap=scarce?100:foeTk?105:170,tprob=scarce?.3:foeTk?.35:.1;
-  if(enabled('tank',me)&&t>=(OPT.early&&campBattle!=null?35:tk.unlock+(scarce?30:90))&&!ai.saving&&tkAlive<tcap&&t-ai.lastTank>tgap&&sup[me]<tkCost&&Math.random()<tprob){ai.saving=true;ai.saveEnd=t+100;}
+  if(enabled('tank',me)&&t>=(OPT.early&&campBattle!=null?35:tk.unlock+(scarce?30:90))&&!ai.saving&&!danger&&!(ai.dangerT&&t-ai.dangerT<25)&&tkAlive<tcap&&t-ai.lastTank>tgap&&sup[me]<tkCost&&Math.random()<tprob){ai.saving=true;ai.saveEnd=t+100;}
   if(ai.saving){
     if(sup[me]>=tkCost){sup[me]-=tkCost;queueSquad(me,'tank');ai.saving=false;ai.lastTank=t;setBanner(tx('enemyTank'));return;}
     if(t>ai.saveEnd){ai.saving=false;ai.lastTank=t-100;}
@@ -3059,7 +3087,7 @@ function aiThink(dt){
   if(!ai.want||!ok(ai.want)){const l=SQ_ORDER.filter(ok);if(!l.length)return;ai.want=pickW(l);ai.wantEnd=t+((ai.want==='at'||ai.want==='mortar')&&units.some(u=>u.team!==me&&u.hp>0&&u.role==='tank')?75:35);}
   const wc=sqOf(ai.want,me).cost;
   if(sup[me]>=wc){sup[me]-=wc;queueSquad(me,ai.want);ai.want=null;return;}
-  const hold=(ai.want==='at'||ai.want==='mortar')&&units.some(u=>u.team!==me&&u.hp>0&&u.role==='tank');
+  const hold=!danger&&(ai.want==='at'||ai.want==='mortar')&&units.some(u=>u.team!==me&&u.hp>0&&u.role==='tank');
   if(t>ai.wantEnd||cnt<(hold?2:4)){
     const aff=SQ_ORDER.filter(k=>ok(k)&&sup[me]>=sqOf(k,me).cost);
     if(aff.length){const pk=pickW(aff);sup[me]-=sqOf(pk,me).cost;queueSquad(me,pk);ai.want=null;}
@@ -4433,4 +4461,10 @@ if(HEADLESS){
     getState:()=>({state,t,sup,projs,units,bases,stats,trenches,wires,mines,cos,upg,ai,clouds,queue}),setState:s=>{state=s;},setSup:(tm,v)=>{sup[tm]=v;},frontX};
 }else initUI();
 })();
+</script>
+<script>
+/* Installierbar (PWA): Service Worker nur über http(s), nie beim Öffnen als Datei */
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){
+  window.addEventListener('load',()=>{try{navigator.serviceWorker.register('sw.js').catch(()=>{});}catch(e){}});
+}
 </script>

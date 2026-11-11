@@ -1,6 +1,6 @@
 /* Warfare – Service Worker: Spiel läuft nach dem ersten Laden auch offline.
    Bei einer neuen Version VERSION erhöhen, dann wird der Cache erneuert. */
-const VERSION='warfare-7_26';
+const VERSION='warfare-7_31';
 const CORE=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png','icon-maskable-512.png','icon-180.png'];
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(VERSION).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));
