@@ -1,4 +1,5 @@
 # Warfare 1917
+Aufrufen: https://derrolo.github.io/Warfare/
 
 Ein Echtzeit-Strategiespiel im Browser über den Grabenkrieg des Ersten Weltkriegs. Britische Truppen (links) gegen deutsche (rechts) auf einem seitlich scrollenden Schlachtfeld. Du kaufst Einheiten, baust Stellungen aus und setzt Unterstützungsfeuer ein, die Truppen kämpfen von selbst. Alle Grafiken und Töne sind eigene Arbeit, das Spiel steckt in einer einzigen Datei.
 
