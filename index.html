@@ -116,7 +116,7 @@ details.cust summary{cursor:pointer;min-height:34px;display:flex;align-items:cen
 .chead{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .chead h2{margin:0}
 .cgrid{display:grid;grid-template-columns:1fr 250px;gap:10px}
-@media(max-width:780px){.cgrid{grid-template-columns:minmax(0,1fr)}.sides{grid-template-columns:1fr}.ftitle{font-size:34px}.mka{height:230px}.chead{flex-wrap:wrap}.chead h2{font-size:24px;line-height:1.1}.chead .fbtn{font-size:14px!important;padding:7px 10px!important}.ftitle{font-size:30px}.mk .fl{width:18px;height:11px}.mk .ar{width:7px}.mk .fl{width:22px;height:13px}.mk .ar{width:9px}.mk .nm{font-size:10px;min-width:16px;left:-6px;top:-9px}.mk{padding:2px;gap:2px}.cinfo{font-size:12px}.pbox{font-size:28px;padding:3px 10px}.card.campc{padding:12px}}
+@media(max-width:780px){.mk .fl{width:17px!important;height:10px!important}.mk .ar{width:6px!important}.cgrid{grid-template-columns:minmax(0,1fr)}.sides{grid-template-columns:1fr}.ftitle{font-size:34px}.mka{height:230px}.chead{flex-wrap:wrap}.chead h2{font-size:24px;line-height:1.1}.chead .fbtn{font-size:14px!important;padding:7px 10px!important}.ftitle{font-size:30px}.mk .fl{width:18px;height:11px}.mk .ar{width:7px}.mk .fl{width:22px;height:13px}.mk .ar{width:9px}.mk .nm{font-size:10px;min-width:16px;left:-6px;top:-9px}.mk{padding:2px;gap:2px}.cinfo{font-size:12px}.pbox{font-size:28px;padding:3px 10px}.card.campc{padding:12px}}
 .cpanel{background:var(--panel);border:1px solid var(--line);padding:10px;display:grid;gap:8px;align-content:start}
 .cpanel h3{margin:0;text-align:center;font:700 16px var(--font-display);letter-spacing:.05em;text-transform:uppercase;color:var(--accent)}
 .pbox{justify-self:center;min-width:76px;text-align:center;font:700 38px/1.1 var(--font-display);background:#0d0c09;border:1px solid var(--line);padding:6px 14px}
@@ -251,6 +251,19 @@ body.fill .sheet{top:auto;bottom:64px;max-height:calc(100% - 120px)}
   .prog{gap:8px;padding:4px 6px}
   .pg span{font-size:9px}
 }
+.tutbox{pointer-events:none;position:absolute;z-index:40;left:50%;top:46px;transform:translateX(-50%);width:min(92%,430px);max-height:62%;overflow:auto;background:rgba(12,11,8,.95);border:1px solid var(--accent);padding:10px 12px;color:var(--fg);font:14px/1.4 var(--font-body);box-shadow:0 4px 18px rgba(0,0,0,.6)}
+.tutbox h4{margin:2px 0 5px;font:700 17px var(--font-display);letter-spacing:.05em;text-transform:uppercase;color:var(--accent)}
+.tutbox p{margin:0 0 8px}.tutbox ul{margin:4px 0 8px;padding-left:18px}.tutbox li{margin:3px 0}
+.tutbox .th{display:flex;justify-content:space-between;align-items:center;font:600 11px var(--font-mono);color:var(--muted)}
+.tutbox .th button{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit;padding:4px}
+.tutbox button{pointer-events:auto}.tutbox .tb{background:var(--accent);color:#14110a;border:0;font:700 14px var(--font-display);letter-spacing:.06em;text-transform:uppercase;padding:8px 18px;cursor:pointer;min-height:40px}
+.tutglow{animation:tutg 1s ease-in-out infinite;outline:2px solid var(--accent);outline-offset:1px;position:relative;z-index:6}
+@keyframes tutg{0%,100%{box-shadow:0 0 0 0 rgba(235,190,70,0)}50%{box-shadow:0 0 14px 4px rgba(235,190,70,.9)}}
+.tutarr{position:absolute;inset:0;z-index:39;pointer-events:none;display:flex;justify-content:space-between;align-items:center;padding:0 10px;font-size:46px;color:var(--accent);text-shadow:0 0 8px #000}
+.tutarr span{animation:tuta 1s ease-in-out infinite}.tutarr span:last-child{animation-delay:.5s}
+@keyframes tuta{0%,100%{opacity:.2}50%{opacity:1}}
+@media(max-width:780px){.tutbox{top:38px;font-size:12.5px;padding:8px 10px;width:min(94%,360px)}.tutbox h4{font-size:15px}.tutarr{font-size:34px}}
+@media(max-height:480px){.tutbox{top:30px;font-size:12px;max-height:70%}}
 </style>
 
 <div class="app">
@@ -280,6 +293,8 @@ body.fill .sheet{top:auto;bottom:64px;max-height:calc(100% - 120px)}
       <div class="pn r"><span id="pgRn"></span><small id="pgRh"></small></div>
     </div>
     <div class="bar" id="bar" role="toolbar"></div>
+    <div class="tutarr" id="tutArr" hidden><span>◀</span><span>▶</span></div>
+    <div class="tutbox" id="tut" hidden></div>
     <div class="sheet" id="sheet" hidden>
       <header><h2 id="shT">Upgrades</h2><button class="tool" id="bSheetX" type="button" aria-label="Close">✕</button></header>
       <div id="upTree"></div>
@@ -499,7 +514,7 @@ const STAN=[{tgt:1,acc:.94},{tgt:.8,acc:1},{tgt:.6,acc:1.1}];
 for(const k in ROLES){const r=ROLES[k];if(r.G)r.G.forEach((g,i)=>{if(g&&r.W[i])g.rng=Math.round(r.W[i].rng*.63);});}
 const SQ_ORDER=['rifle','gren','raider','mg','sniper','officer','at','mortar','tank'];
 const FS_ORDER=['arty','atart','gas','smoke'];
-const TOOL_KEYS={trench:'G',wire:'D',mine:'M',demo:'R',arty:'A',atart:'T',gas:'Y',smoke:'X'};
+const TOOL_KEYS={trench:'G',wire:'W',mine:'M',demo:'R',arty:'Q',atart:'T',gas:'Y',smoke:'X'};
 /* Upgrades (bezahlt mit Nachschub). tree: a=Basis, b=Infanterie/Panzer, c=Fire Support */
 const UPG={
   supply:{tree:'a',max:15,cost:l=>110+l*80},
@@ -568,7 +583,7 @@ de:{sup:'Nachschub',inc:'Einkommen',time:'Zeit',kills:'Abschüsse',pause:'Pause'
  best:'Beste Zeit auf',
  wave:'Gegnerische Welle',enemyTank:'Gegnerischer Panzer rückt vor',artyGo:'Artillerie unterwegs',atartGo:'Anti-Tank-Artillerie unterwegs',gasGo:'Gaswolke',smokeGo:'Rauchwand',forward:'Vorwärts!',
  cantBuild:'Nur hinter den eigenen vordersten Einheiten',
- keys:'Tasten 1–9 kaufen Einheiten, G Graben, D Draht, M Mine, A/T/Y/X Fire Support, U Upgrades, B Basis, R Abreißen, Pfeile verschieben die Karte, Esc bricht ab, P pausiert.',
+ keys:'Tasten 1–9 kaufen Einheiten, G Graben, W Draht, M Mine, Q/T/Y/X Fire Support, U Upgrades, B Basis, R Abreißen, Pfeile oder A/D verschieben die Karte, Esc bricht ab, P pausiert.',
  br_wirt:'Wirtschaft',brs_wirt:'Geld und Einheiten-Limit',br_inf:'Infanterie',brs_inf:'Gilt für alle Soldaten',br_spez:'Spezialisten',brs_spez:'Je Einheitentyp, ab Feuerkraft 1',br_pz:'Panzer',brs_pz:'Ab Nachschub 3',br_fs:'Fire Support',brs_fs:'Artillerie, Gas, Rauch',br_stell:'Stellung',brs_stell:'Die Basis, nur im Stellungskrieg',gr_kampf:'Kampfkraft',gr_ausr:'Ausrüstung und Gelände',needs:'braucht',
  tree_a:'Stellung und Nachschub',tree_b:'Infanterie und Panzer',tree_c:'Fire Support',lvl:'Stufe',
  lever:'Hebel',locked:'gesperrt',
@@ -601,7 +616,7 @@ en:{sup:'Supplies',inc:'Income',time:'Time',kills:'Kills',pause:'Pause',resume:'
  best:'Best time on',
  wave:'Enemy wave',enemyTank:'Enemy tank advancing',artyGo:'Artillery incoming',atartGo:'Anti-tank artillery incoming',gasGo:'Gas cloud',smokeGo:'Smoke screen',forward:'Forward!',
  cantBuild:'Only behind your foremost units',
- keys:'Keys 1–9 buy units, G trench, D wire, M mine, A/T/Y/X fire support, U upgrades, B base, R demolish, arrows scroll the map, Esc cancels, P pauses.',
+ keys:'Keys 1–9 buy units, G trench, W wire, M mine, Q/T/Y/X fire support, U upgrades, B base, R demolish, arrows or A/D scroll the map, Esc cancels, P pauses.',
  br_wirt:'Economy',brs_wirt:'Income and unit cap',br_inf:'Infantry',brs_inf:'All soldiers',br_spez:'Specialists',brs_spez:'Per unit type, needs Firepower 1',br_pz:'Tanks',brs_pz:'Needs Supply 3',br_fs:'Fire support',brs_fs:'Artillery, gas, smoke',br_stell:'Position',brs_stell:'The base, position warfare only',gr_kampf:'Firepower',gr_ausr:'Gear and terrain',needs:'needs',
  tree_a:'Position and supplies',tree_b:'Infantry and tanks',tree_c:'Fire support',lvl:'Level',
  lever:'Lever',locked:'locked',
@@ -2038,7 +2053,7 @@ function buildOverlays(){
 }
 
 /* ================= Zustand ================= */
-let campBattle=null,CAMP=null,OPT_SAVED=null,campAsk=false;
+let campBattle=null,CAMP=null,OPT_SAVED=null,campAsk=false,TUT=null,tutHold=false,campM=null;
 const XPV={rifle:1,gren:2,raider:2,mg:3,officer:3,sniper:3,mortar:3,gun:3,tgew:3,tank:15};
 let state='menu',diffKey='normal',aiMode='bal',speed=1,PL=0,AIT=1,mode='pos',mapKey='mid';
 let mapTheme=0;
@@ -2054,9 +2069,12 @@ function bcost(tm,k){
 const rv=(v,tm)=>Array.isArray(v)?v[tm]:v;
 const depth=y=>S*(.88+.24*clamp((y-GROUND)/LANE,0,1));
 const AIS=()=>campBattle!=null?0:Math.min(t,600)*.5;   /* Zeitzuschlag der KI wächst nur noch bis Minute 10 und dann nicht weiter (vorher unbegrenzt: nach 30 min 2,6x Einkommen, 2,2x Leben/Schaden, 3x Kaufrate) */
-const dmgMult=tm=>tm===PL?1+.12*upg.fire:DIFF[diffKey].dmg*(1+AIS()/1500);
+/* Kampagnen-KI: spiegelt einen Teil der Kommando-Upgrades des Spielers (Nachschub, Feuerkraft, Panzerung), damit Upgrade-Spam sie nicht abhängt. */
+const CAI={mirror:.7,wait:.85,inc:1.12};
+const aiUp=k=>campBattle!=null&&CAMP?(CAMP.lv[k]||0)*CAI.mirror:0;
+const dmgMult=tm=>tm===PL?1+.12*upg.fire:DIFF[diffKey].dmg*(1+AIS()/1500)*(1+.12*aiUp('fire'));
 const income=()=>CFG.baseIncome*(1+.2*upg.supply)*(bases[PL].atk>0?1.3:1);
-const aiIncome=()=>CFG.baseIncome*(campBattle!=null?1:1.2)*AIM[aiMode].inc*DIFF[diffKey].inc*(1+AIS()/1100)*(bases[AIT].atk>0&&campBattle==null?1.3:1);
+const aiIncome=()=>CFG.baseIncome*(campBattle!=null?CAI.inc*((campM&&campM.inc)||1)*(1+.2*aiUp('supply')):1.2)*AIM[aiMode].inc*DIFF[diffKey].inc*(1+AIS()/1100)*(bases[AIT].atk>0&&campBattle==null?1.3:1);
 const nAlive=tm=>{let n=0;for(const u of units)if(u.team===tm&&u.hp>0)n++;return n;};
 const countTeam=tm=>{let n=nAlive(tm);for(const q of queue)if(q.team===tm)n++;return n;};
 function sqOf(type,tm){const q=SQ[type];return{type,key:q.key,cost:rv(q.cost,tm),roles:q.roles[q.roles.length>1?tm:0],code:q.code[tm],unlock:q.unlock,w:q.w};}
@@ -2167,6 +2185,7 @@ function wireHit(w,ux,uy,pad){
   return Math.abs(ux-(w.x0+(w.x1-w.x0)*tt))<pad;
 }
 function reset(){
+  TUT=null;tutHold=false;try{tutHide();}catch(e){}
   mapKey=OPT.map;mode=OPT.mode;PL=OPT.team;AIT=1-PL;diffKey=OPT.diff;aiMode=OPT.ai;WW=MAPS[OPT.map].w;
   t=0;sup=[0,0];sup[PL]=CFG.startSupplies;sup[AIT]=CFG.startSupplies*.9;
   upg={};for(const k in UPG)upg[k]=0;
@@ -2257,7 +2276,7 @@ function queueSquad(team,type){
 }
 function spawnUnit(team,role,co){
   const R=ROLES[role],W=R.W[team],hp0=rv(R.hp,team);
-  const hpM=(team===PL?1+.12*upg.armor:DIFF[diffKey].hp*(1+AIS()/1500))*(role==='tank'&&team===PL?1+.25*(upg.tankarmor||0):1)*(role==='officer'&&team===PL?1+.25*(upg.offhp||0):1);
+  const hpM=(team===PL?1+.12*upg.armor:DIFF[diffKey].hp*(1+AIS()/1500)*(1+.12*aiUp('armor')))*(role==='tank'&&team===PL?1+.25*(upg.tankarmor||0):role==='tank'?1+.25*aiUp('tankarmor'):1)*(role==='officer'&&team===PL?1+.25*(upg.offhp||0):1);
   const y=GROUND+10+Math.random()*(LANE-20);
   const u={team,role,co,x:co.sx!=null?co.sx+rnd(-30,30):team===0?(mode==='pos'?58:34)+rnd(-6,14):WW-(mode==='pos'?58:34)-rnd(-6,14),y,ty:y,hp:hp0*hpM,max:hp0*hpM,cd:.3+Math.random()*.5,rl:0,ammo:W.mag,
     hadT:false,aimT:0,setT:0,stance:0,gcd:Math.random()*4,gp:.55+Math.random()*1.1,gcd2:0,ccd:1.5,mcd:0,anim:Math.random()*4,flash:0,hit:0,thr:0,mel:0,hop:0,sel:0,moving:false,slot:null,inT:false,
@@ -2300,7 +2319,7 @@ function tryTrench(u,d,look){
     if(!co.dec.get(tr)){co.passed.add(tr);continue;}
     const own=trenchOwner(tr);
     if(co.type==='mg'&&tr.mgPost&&tr.mgTeam===u.team&&(own===null||own===u.team||own===undefined)){
-      if(co.post!==tr&&!co.post&&!tr.cos.includes(co)&&co.mem.some(m=>m.hp>0&&m.role==='mg')){const fs0=mgFreeSlot(tr);if(fs0)postJoin(tr,co,fs0);}
+      if(co.post!==tr&&!co.post&&!tr.cos.includes(co)&&co.mem.some(m=>m.hp>0&&m.role==='mg')){const fs0=mgFreeSlot(tr);if(fs0&&!tr.lock[u.team])postJoin(tr,co,fs0);}
       if(co.post===tr){
         const ms=tr.slots.find(q=>q.res===co);
         if(ms){
@@ -2917,6 +2936,7 @@ function fireSupport(team,kind,x,y){
 const BUILD_KEYS=['trench','wire','mine','demo'];
 function setTool(name){
   if(state!=='play')return;
+  if(BUILD_KEYS.includes(name)&&((campBattle!=null&&!OPT.flags.build)||(name==='trench'&&!OPT.flags.build)))return;   /* gesperrte Werkzeuge reagieren auch nicht auf Hotkeys */
   if(tool===name){tool=null;}
   else{
     if(FS_ORDER.includes(name)&&(!fsEnabled(name)||cds[PL][name]>0||(CFG.fs[name].cost&&sup[PL]<CFG.fs[name].cost)))return;
@@ -2997,12 +3017,13 @@ function aiThink(dt){
   for(const k of BUILD_KEYS)cdb[me][k]=Math.max(0,cdb[me][k]-dt);
   ai.timer-=dt;
   if(ai.timer>0)return;
-  ai.timer=(2.6+Math.random()*2.6)*AIM[aiMode].rate*DIFF[diffKey].wait/(1+AIS()/900)*(campBattle!=null?1.3:1);
+  ai.timer=(2.6+Math.random()*2.6)*AIM[aiMode].rate*DIFF[diffKey].wait/(1+AIS()/900)*(campBattle!=null?CAI.wait:1);
+  const CM=campBattle!=null?campM:null,FSM=CM?1.5*(CM.fsm||1):1;
   const nearCap=cnt>=capOf(me)-6;   /* nahe am Limit kauft die KI keine Trupps mehr, aber weiterhin einen Panzer (1 Platz) */
   if(cnt>=capOf(me))return;
   const fr=frontX(me),room=(fr-B.front)*d;
-  if(t>40&&Math.random()<.12*M.bd&&sup[me]>=CFG.wireCost+150&&wires.filter(w=>w.team===me).length<15&&room>180)buildWire(me,B.front+d*aiPickX(110,room-30));
-  if(t>40&&Math.random()<.18*M.bd&&sup[me]>=CFG.mineCost+90&&mines.filter(m=>m.team===me).length<16&&room>180)buildMine(me,B.front+d*aiPickX(110,room+60),GROUND+10+Math.random()*(LANE-20));
+  if(!(CM&&CM.nb)&&t>40&&Math.random()<.12*M.bd&&sup[me]>=CFG.wireCost+150&&wires.filter(w=>w.team===me).length<15&&room>180)buildWire(me,B.front+d*aiPickX(110,room-30));
+  if(!(CM&&CM.nb)&&t>40&&Math.random()<.18*M.bd&&sup[me]>=CFG.mineCost+90&&mines.filter(m=>m.team===me).length<16&&room>180)buildMine(me,B.front+d*aiPickX(110,room+60),GROUND+10+Math.random()*(LANE-20));
   /* Sparziel: Graben bauen oder Grabenausbau kaufen (die KI spart dafür gezielt) */
   if(ai.sv){
     const v=ai.sv;
@@ -3011,11 +3032,11 @@ function aiThink(dt){
       else buildTrench(me,v.x);
       ai.sv=null;
     }else if(t>v.end||(v.tu&&!trenches.includes(v.tr)))ai.sv=null;
-  }else if(t>(aiMode==='def'?45:80)&&cnt>=(aiMode==='def'?3:6)&&Math.random()<.32*M.bd){
+  }else if(t>(aiMode==='def'?45:80)&&cnt>=(aiMode==='def'?3:6)&&Math.random()<.32*M.bd*(CM&&CM.mgs?1.35:1)){
     const mt=trenches.filter(tr=>tr.cos.some(c=>c.team===me));
     if(mt.length&&Math.random()<.65){
       const tr=mt[Math.floor(Math.random()*mt.length)];
-      for(const k of ['bags','fwire','bags','mgp']){if(k==='mgp'&&!enabled('mg',me))continue;const c=tuCost(tr,k);if(c!=null){ai.sv={tu:1,tr,k,cost:c,end:t+90};break;}}
+      for(const k of (CM&&CM.mgs&&Math.random()<.45?['mgp','bags','fwire','bags']:['bags','fwire','bags','mgp'])){if(k==='mgp'&&!enabled('mg',me))continue;const c=tuCost(tr,k);if(c!=null){ai.sv={tu:1,tr,k,cost:c,end:t+90};break;}}
     }else if(trenches.filter(x=>x.team===me).length<(aiMode==='def'?4:3)&&room>260){
       const x=B.front+d*aiPickX(150,room-50);
       if(canTrench(me,x))ai.sv={x,cost:bcost(me,'trench'),end:t+90};
@@ -3028,8 +3049,8 @@ function aiThink(dt){
     }
   }
   for(const co of cos)if(co.team===me&&co.tr&&clouds.some(c=>c.k==='gas'&&c.team!==me&&Math.abs(c.x-co.tr.x)<c.r+25)&&Math.random()<(co.mem.some(m=>m.hp>0&&m.tgt)?.08:.85))releaseCo(co);
-  const aiFs=(k,x,y)=>{if(t-(ai.fsT||-99)<24)return false;const r=fireSupport(me,k,x,y);if(r)ai.fsT=t;return r;};
-  if(t>70&&Math.random()<.22){
+  const aiFs=(k,x,y)=>{if(t-(ai.fsT||-99)<(CM?15:24))return false;const r=fireSupport(me,k,x,y);if(r)ai.fsT=t;return r;};
+  if(t>70&&Math.random()<.22*FSM){
     const mv=units.filter(u=>u.team===me&&u.hp>0&&!u.slot&&u.moving),foe=units.filter(u=>u.team===PL&&u.hp>0);
     if(mv.length>=4&&foe.length){
       let nf=foe[0];for(const o of foe)if(Math.abs(o.x-fr)<Math.abs(nf.x-fr))nf=o;
@@ -3045,7 +3066,7 @@ function aiThink(dt){
     const tks=units.filter(u=>u.team===PL&&u.hp>0&&u.role==='tank'&&Math.abs(u.x-fr)<900);
     if(tks.length){const tk0=tks[0];aiFs('arty',tk0.x+dirOf(PL)*30,tk0.y);}
   }
-  if(t>60&&Math.random()<.17*M.fs){
+  if(t>60&&Math.random()<.17*M.fs*FSM){
     const pu=units.filter(u=>u.team===PL&&u.hp>0);
     if(pu.length>3){
       const c=pu[Math.floor(Math.random()*pu.length)];
@@ -3063,13 +3084,14 @@ function aiThink(dt){
    const span=Math.abs(bases[PL].front-B.front);
    danger=dmin<1e9&&(dmin<span*.38||(dmin<span*.62&&cnt<=2)||(cnt===0&&dmin<span*.8));}
   if(danger){ai.sv=null;if(ai.saving){ai.saving=false;ai.lastTank=t-60;}ai.dangerT=t;}
-  if(ai.sv&&cnt>=8)return;
+  if(ai.sv&&cnt>=8&&!(CM&&CM.tk&&!(ai.lastTank>0)&&t<CM.tk.t0+70))return;
   const tk=SQ.tank,tkCost=sqOf('tank',me).cost;
   const tkAlive=units.filter(u=>u.team===me&&u.role==='tank'&&u.hp>0).length+queue.filter(q=>q.team===me&&q.role==='tank').length;
   /* Panzer-Wunsch richtet sich nach der Lage: wenige erlaubte Einheitenarten (z. B. nur MG + Panzer) und ein gegnerischer Panzer erhöhen Zahl und Kaufbereitschaft */
   const foeTk=units.filter(u=>u.team!==me&&u.hp>0&&u.role==='tank').length,kinds=SQ_ORDER.filter(k=>k!=='tank'&&enabled(k,me)).length,scarce=kinds<=3;
-  const tcap=1+Math.floor(t/420)+(scarce?2:0)+(foeTk>tkAlive?1:0),tgap=scarce?100:foeTk?105:170,tprob=scarce?.3:foeTk?.35:.1;
-  if(enabled('tank',me)&&t>=(OPT.early&&campBattle!=null?35:tk.unlock+(scarce?30:90))&&!ai.saving&&!danger&&!(ai.dangerT&&t-ai.dangerT<25)&&tkAlive<tcap&&t-ai.lastTank>tgap&&sup[me]<tkCost&&Math.random()<tprob){ai.saving=true;ai.saveEnd=t+100;}
+  let tcap=1+Math.floor(t/420)+(scarce?2:0)+(foeTk>tkAlive?1:0),tgap=scarce?100:foeTk?105:170,tprob=scarce?.3:foeTk?.35:.1;
+  if(CM&&CM.tk){tcap=CM.tk.cap+Math.floor(t/420)+(foeTk>tkAlive?1:0);tgap=CM.tk.gap;tprob=(ai.lastTank>0||CM.tk.t0>0)?CM.tk.prob:1;}
+  if(enabled('tank',me)&&t>=(CM&&CM.tk?CM.tk.t0:tk.unlock+(scarce?30:90))&&!ai.saving&&!danger&&!(ai.dangerT&&t-ai.dangerT<25)&&tkAlive<tcap&&t-ai.lastTank>tgap&&(sup[me]<tkCost||(CM&&CM.tk))&&Math.random()<tprob){ai.saving=true;ai.saveEnd=t+100;}
   if(ai.saving){
     if(sup[me]>=tkCost){sup[me]-=tkCost;queueSquad(me,'tank');ai.saving=false;ai.lastTank=t;setBanner(tx('enemyTank'));return;}
     if(t>ai.saveEnd){ai.saving=false;ai.lastTank=t-100;}
@@ -3080,6 +3102,14 @@ function aiThink(dt){
   const mgT=trenches.find(tr=>tr.mgPost&&tr.mgTeam===me&&(tr.cos.some(c=>c.team===me)||tr.pcos.some(c=>c.team===me))&&tr.slots.some(s=>s.mg&&!s.u&&!s.res));
   if(mgT&&enabled('mg',me)&&!cos.some(c=>c.team===me&&c.type==='mg'&&c.goal&&trenches.includes(c.goal)&&c.mem.some(m=>m.hp>0&&!m.slot))&&sup[me]>=sqOf('mg',me).cost){
     sup[me]-=sqOf('mg',me).cost;const co=queueSquad(me,'mg');co.goal=mgT;return;
+  }
+  if(CM&&CM.feat&&t>(ai.featT||0)&&t>15){
+    const fl=CM.feat.filter(k=>k!=='tank'&&enabled(k,me)&&t>=SQ[k].unlock);
+    if(fl.length){
+      const k=fl[Math.floor(Math.random()*fl.length)],fc=sqOf(k,me).cost;
+      let have=0;for(const c of cos)if(c.team===me&&c.type===k&&c.mem.some(m=>m.hp>0))have++;
+      if(have<(k==='at'||k==='mortar'?2:3)){if(sup[me]>=fc){sup[me]-=fc;queueSquad(me,k);ai.featT=t+22;return;}}
+    }
   }
   const W=aiWeights(me),ok=k=>k!=='tank'&&enabled(k,me)&&t>=SQ[k].unlock;
   const pickW=list=>{let tot=0;for(const k of list)tot+=W[k];let r=Math.random()*tot,pk=list[0];for(const k of list){r-=W[k];if(r<=0){pk=k;break;}}return pk;};
@@ -3107,7 +3137,8 @@ function aiWeights(me){
     const share=foes.length?inT/(foes.length+2):0,occ=trenches.filter(tr=>tr.cos.some(c=>c.team!==me)).length;
     const sg=Math.min(1,share*2.2+.3*occ);
     w.gren*=1+4.5*sg;w.mortar*=1+1.6*sg;w.raider*=1+.8*sg;w.sniper*=1+.6*sg;
-    w.rifle*=.75;for(const k of ['gren','mg','mortar','officer','sniper','at','raider'])w[k]*=1.35;
+    w.rifle*=.55;for(const k of ['gren','mg','mortar','officer','sniper','at','raider'])w[k]*=1.35;
+    for(const k of ((campM&&campM.feat)||[]))if(w[k]!=null&&k!=='tank')w[k]*=3;
   }
   if(foes.some(u=>u.role==='mg'||u.role==='officer'||u.role==='mortar'))w.sniper*=2.5;
   {const pn=aiPanic(me);if(pn>0){w.at*=1+8*pn;w.mortar*=1+1.2*pn;w.gren*=1+.4*pn;}}
@@ -3601,6 +3632,7 @@ function drawLever(tr){
   ctx.fillStyle='#d9a441';ctx.beginPath();ctx.arc(tr.menu?-7:7,-6,2.8,0,7);ctx.fill();
   if(tr.lock[PL]){ctx.fillStyle='#cf5a3c';ctx.fillRect(-14,14,28,3);}
   ctx.restore();
+  if(TUT&&TUT.tr===tr&&TUT.hl==='tab'){ctx.save();ctx.strokeStyle='#ebbe46';ctx.lineWidth=3;ctx.beginPath();ctx.arc(lx,ly,bsz*(1.45+.4*(Math.sin(performance.now()/170)+1)/2),0,7);ctx.stroke();ctx.restore();}
   const n=tr.cos.length;
   ctx.font='700 11px "IBM Plex Mono",monospace';ctx.textAlign='left';
   const lab=tr.buildT>0?Math.ceil(tr.buildT)+' s':(n?n+'/'+CFG.maxCos:'');
@@ -3620,7 +3652,7 @@ function drawLever(tr){
   const bs=Math.max(15,24/SC),gap=bs*2+8,perRow=Math.max(3,Math.floor((VW-16)/gap));
   items.forEach((it,i)=>{
     const row=Math.floor(i/perRow),col=i%perRow,rowN=Math.min(perRow,items.length-row*perRow);
-    const PX=clamp(lx+(col-(rowN-1)/2)*gap,cam+bs+4,cam+VW-bs-4),PY=ly-bsz-bs-12-row*(bs*2+8),kk=bs/15,vxp=PX-cam;
+    const hw2=(rowN-1)/2*gap,PX=clamp(lx,cam+bs+4+hw2,cam+VW-bs-4-hw2)+(col-(rowN-1)/2)*gap,PY=ly-bsz-bs-12-row*(bs*2+8),kk=bs/15,vxp=PX-cam;
     ctx.save();ctx.translate(PX,PY);ctx.scale(kk,kk);
     ctx.fillStyle='rgba(14,12,8,.94)';ctx.strokeStyle='#6b6350';ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(-15,-15,30,30,4);ctx.fill();ctx.stroke();
     let fn=null,tip=null;
@@ -3661,6 +3693,7 @@ function drawLever(tr){
       const nm=key==='bags'&&tr.bags===2?tx('tu_roof')[0]:key==='mg2'?tx('tu_mg2')[0]:tx('tu_'+key)[0];tip=nm+(done?' (max)':' | '+cost);
     }
     ctx.restore();
+    if(TUT&&TUT.tr===tr&&TUT.hl===it.k){ctx.save();ctx.strokeStyle='#ebbe46';ctx.lineWidth=3;ctx.beginPath();ctx.arc(PX,PY,bs*(1.35+.35*(Math.sin(performance.now()/170)+1)/2),0,7);ctx.stroke();ctx.restore();}
     UIH.push({x:vxp,y:PY,r:bs,fn,tip});
   });
 }
@@ -4197,7 +4230,7 @@ cv.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('keydown',e=>{
   if(e.ctrlKey||e.metaKey||e.altKey)return;
   const k=e.key.toLowerCase();
-  if(['arrowleft','arrowright'].includes(k)){keysDown.add(k);e.preventDefault();return;}
+  if(['arrowleft','arrowright','a','d'].includes(k)){keysDown.add(k);e.preventDefault();return;}
   if(state==='menu')return;
   if(k==='f'){setFull(!document.body.classList.contains('full'));return;}
   if(k==='p'){togglePause();return;}
@@ -4244,9 +4277,10 @@ let saveT=8;
 function frame(ts){
   requestAnimationFrame(frame);
   const dt=Math.min(.05,(ts-last)/1000||0);last=ts;
-  if(keysDown.size&&maxCam()>0){cam=clamp(cam+((keysDown.has('arrowright')?1:0)-(keysDown.has('arrowleft')?1:0))*520*dt,0,maxCam());}
+  if(keysDown.size&&maxCam()>0){cam=clamp(cam+(((keysDown.has('arrowright')||keysDown.has('d'))?1:0)-((keysDown.has('arrowleft')||keysDown.has('a'))?1:0))*520*dt,0,maxCam());}
   if(edgeV&&state==='play'&&!(drag&&drag.moved)&&maxCam()>0){cam=clamp(cam+Math.sign(edgeV)*(.3+.7*Math.abs(edgeV))*520*dt,0,maxCam());}
-  if(state==='play'){for(let i=0;i<speed;i++)step(dt);stepFx(dt*speed);Snd.tick(dt,clamp(units.length/45,0,1.5));}
+  if(TUT)tutTick(dt);
+  if(state==='play'&&!tutHold){for(let i=0;i<speed;i++)step(dt);stepFx(dt*speed);Snd.tick(dt,clamp(units.length/45,0,1.5));}
   else if(state!=='pause'){stepFx(dt);Snd.tick(dt,0);}
   else Snd.hold();
   let tl=0,mv0=0,mv1=0,tsx=0,tn=0;
@@ -4298,28 +4332,36 @@ const CT={de:{cont:'Kampagne fortsetzen',nw:'Neue Kampagne',custom:'Eigenes Gefe
   avail:'You',enemy:'Enemy',xpinfo:'1 point = 15 XP. XP per kill: rifleman 1, grenadier and assault 2, MG, officer, sniper, mortar, anti-tank 3, tank 6. First win of a mission: bonus.',cleared:'Cleared',locked:'Locked',needs:'needs',upT:'Command upgrades',upH:'These last for the whole campaign and cost upgrade points. Points come from experience for kills and victories.',
   u_rifle:'Riflemen',u_gren:'Grenade team',u_mg:'MG team',u_mortar:'Mortar',u_officer:'Officer',u_sniper:'Sniper',u_raider:'Assault team',u_at:'Anti-tank',u_tank:'Tank'}};
 const ct=k=>(CT[lang]&&CT[lang][k])||CT.de[k]||k;
-/* Missionen. Spieler-Einheiten P(i) = Schützen + Freischaltungen UN[0..i-2]; Gegner E(i) = P(i) plus die nächste Freischaltung UN[i-1] (oder E: Liste). Nach Sieg in Mission i (i>=1) wird UN[i-1] freigeschaltet. */
-const UN=[['u:gren'],['u:mg'],['u:mortar'],['u:officer'],['u:at','f:atart'],['u:sniper','f:arty'],['u:raider','f:smoke','u:tank','f:gas']];
-const MIS=[
- {de:['Erste Gräben','Zwei Schützenlinien, beide mit einem Graben vor der Stellung.'],en:['First trenches','Two lines of riflemen, each with a trench in front of its position.'],diff:'easy',ai:'bal',map:'small',tl:[.24,.76],wl:[],mine:'none',build:0,theme:1},
- {de:['Handgranaten','Der Gegner hält einen Graben nahe seiner Linie und hat Granatentrupps.'],en:['Hand grenades','The enemy holds a trench near his line and has grenade teams.'],diff:'easy',ai:'bal',map:'small',tl:[.26,.74],wl:[.4,.6],mine:'none',build:0,theme:0},
- {de:['Das MG-Nest','Der Gegner sitzt mit MGs im Graben und hat Draht gezogen. Dein Granatentrupp räumt auf.'],en:['The machine gun nest','The enemy sits in a trench with machine guns behind wire. Your grenade teams clear it.'],diff:'easy',ai:'def',map:'mid',tl:[.2,.8],wl:[.32,.68],mine:'few',build:0,theme:5},
- {de:['Platzregen','Der Gegner hat sich eingegraben und setzt Mörser ein.'],en:['Downpour','The enemy is dug in and uses mortars.'],diff:'normal',ai:'def',map:'mid',tl:[.2,.38,.62,.8],wl:[.3,.5,.7],mine:'few',build:0,theme:0},
- {de:['Neuland','Der Gegner führt Offiziere ins Feld. Erstmals darfst du selbst Gräben, Draht und Minen setzen.'],en:['No man’s land','The enemy brings officers into the field. You may now build trenches, wire and mines yourself.'],diff:'normal',ai:'bal',map:'mid',tl:[.16,.36,.64,.84],wl:[.28,.5,.72],mine:'few',build:1,theme:2},
- {de:['Die Zange','Der Gegner hat Panzerabwehr. Greife dort an, wo sie nicht steht.'],en:['The pincer','The enemy has anti-tank guns. Strike where they are not.'],diff:'normal',ai:'aggr',map:'mid',tl:[.15,.38,.62,.85],wl:[.26,.5,.74],mine:'mid',build:1,theme:3},
- {de:['Panzer-Alarm','Der Gegner setzt früh auf Panzer und MGs. Deine Panzerabwehr ist jetzt gefragt.'],en:['Tank alert','The enemy goes for tanks and machine guns early. Your anti-tank guns matter now.'],diff:'normal',ai:'def',map:'long',tl:[.1,.28,.46,.54,.72,.9],wl:[.2,.4,.6,.8],mine:'mid',build:1,theme:4,early:1,E:['u:mg','u:tank']},
- {de:['Scharfe Augen','Der Gegner hat alles bis auf Gas im Angebot. Sniper und Artillerie sind deine Antwort.'],en:['Sharp eyes','The enemy fields everything. Snipers and artillery are your answer.'],diff:'normal',ai:'bal',map:'long',tl:[.12,.3,.7,.88],wl:[.22,.5,.78],mine:'mid',build:1,theme:0},
- {de:['Der Durchbruch','Alle Mittel sind frei. Brich die letzte Linie des Gegners.'],en:['The breakthrough','All assets are available. Break the enemy’s last line.'],diff:'normal',ai:'aggr',map:'long',tl:[.1,.25,.4,.6,.75,.9],wl:[.2,.4,.6,.8],mine:'many',build:1,theme:3,all:1}
-];
+/* Missionen (7_31: 16 statt 9). Spieler: Schützen + alle Freischaltungen (unl) der bereits gewonnenen Missionen, abzüglich ban.
+   Gegner: feste Liste E je Mission, meist eine Freischaltung voraus.
+   feat = Einheiten, die der Gegner gezielt und regelmäßig baut; mgs = baut öfter MG-Stände; nb = Gegner baut keinen Draht/Minen;
+   inc = Einkommensfaktor des Gegners; es = Start-Nachschub des Gegners; fsm = Fire-Support-Faktor des Gegners;
+   tk = Panzerplan {t0 frühester Kauf in s, gap Mindestabstand, cap gleichzeitig, prob Kaufwahrscheinlichkeit je Entscheidung}. */
 const UNIT_ORDER=['rifle','gren','mg','mortar','officer','sniper','raider','at','tank'],FS_ORD=['arty','atart','gas','smoke'];
+const E2=['u:gren'],E3=E2.concat('u:mg'),E4=E3.concat('u:sniper'),E5=E4.concat('u:officer','f:smoke'),E6=E5.concat('u:mortar'),E7=E6.concat('f:arty'),E8=E7.concat('u:raider'),E9=E8.concat('u:tank'),E10=E9.concat('u:at','f:atart'),E12=E10.concat('f:gas');
+const MIS=[
+ {de:['Rekrutenausbildung','Lerne die Grundlagen: Karte bewegen, Trupps rufen, Gräben nutzen. Der Gegner hält sich zurück.'],en:['Basic training','Learn the basics: moving the map, calling squads, using trenches. The enemy holds back.'],diff:'easy',ai:'def',map:'small',tl:[.3,.7],wl:[],mine:'none',build:0,theme:1,E:[],unl:[],tut:1,nb:1,inc:.5},
+ {de:['Handgranaten','Nur Schützen gegen Schützen und Granatentrupps. Der Gegner hält einen Graben nahe seiner Linie und wirft Handgranaten. Danach bekommst du selbst Granatentrupps.'],en:['Hand grenades','Riflemen only against riflemen and grenade teams. The enemy holds a trench near his line and throws hand grenades. Afterwards you get grenade teams of your own.'],diff:'easy',ai:'bal',map:'small',tl:[.26,.74],wl:[],mine:'none',build:0,theme:0,E:E2,unl:['u:gren'],feat:['gren'],nb:1,inc:.85},
+ {de:['Das MG-Nest','Der Gegner sitzt mit MGs hinter Draht im Graben. Dein Granatentrupp räumt auf. Danach bekommst du das MG.'],en:['The machine gun nest','The enemy sits in a trench behind wire with machine guns. Your grenade teams clear it. Afterwards you get the MG.'],diff:'easy',ai:'def',map:'mid',tl:[.2,.8],wl:[.32,.68],mine:'few',build:0,theme:5,E:E3,unl:['u:mg'],feat:['mg','gren'],mgs:1,inc:.95},
+ {de:['Scharfe Augen','Gegnerische Sniper decken die Gräben. Halte die Köpfe unten und setze das MG ein. Danach bekommst du den Sniper.'],en:['Sharp eyes','Enemy snipers cover the trenches. Keep your heads down and use the MG. Afterwards you get the sniper.'],diff:'easy',ai:'bal',map:'mid',tl:[.2,.4,.6,.8],wl:[.3,.5,.7],mine:'few',build:0,theme:0,E:E4,unl:['u:sniper'],feat:['sniper','mg'],mgs:1,inc:1},
+ {de:['Offiziere und Nebel','Der Gegner führt Offiziere ins Feld und legt Rauch. Erstmals darfst du selbst Gräben, Draht und Minen setzen. Danach bekommst du Offizier und Rauch.'],en:['Officers and smoke','The enemy fields officers and lays smoke. You may now build trenches, wire and mines yourself. Afterwards you get the officer and smoke.'],diff:'normal',ai:'bal',map:'mid',tl:[.16,.36,.64,.84],wl:[.28,.5,.72],mine:'few',build:1,theme:2,E:E5,unl:['u:officer','f:smoke'],feat:['officer','gren','sniper'],mgs:1,inc:1},
+ {de:['Platzregen','Der Gegner hat sich eingegraben und setzt Mörser ein. Suche Deckung und schalte seine Mörser aus. Danach bekommst du den Mörser.'],en:['Downpour','The enemy is dug in and uses mortars. Find cover and take out his mortars. Afterwards you get the mortar.'],diff:'normal',ai:'def',map:'mid',tl:[.2,.38,.62,.8],wl:[.3,.5,.7],mine:'few',build:1,theme:0,E:E6,unl:['u:mortar'],feat:['mortar','mg'],mgs:1,inc:1.05},
+ {de:['Feuerüberfall','Der Gegner hat Artillerie. Weiche dem Beschuss aus und halte nicht zu dicht beieinander. Danach bekommst du die Artillerie.'],en:['Barrage','The enemy has artillery. Avoid the shelling and do not bunch up. Afterwards you get artillery.'],diff:'normal',ai:'aggr',map:'mid',tl:[.15,.38,.62,.85],wl:[.26,.5,.74],mine:'mid',build:1,theme:3,E:E7,unl:['f:arty'],feat:['mortar','gren'],inc:1.05},
+ {de:['Sturmtruppen','Der Gegner greift mit Sturmtrupps an. Halte die Gräben und wehre sie ab. Danach bekommst du Sturmtrupps.'],en:['Assault teams','The enemy attacks with assault teams. Hold the trenches and beat them back. Afterwards you get assault teams.'],diff:'normal',ai:'aggr',map:'mid',tl:[.15,.38,.62,.85],wl:[.26,.5,.74],mine:'mid',build:1,theme:2,E:E8,unl:['u:raider'],feat:['raider','gren','mortar'],inc:1.1},
+ {de:['Stahlungetüm','Der erste Panzer rollt an. Mörser und Artillerie sind jetzt deine Antwort. Danach bekommst du Panzerabwehr und Anti-Tank-Artillerie.'],en:['Steel monster','The first tank rolls in. Mortars and artillery are your answer. Afterwards you get anti-tank guns and anti-tank artillery.'],diff:'normal',ai:'def',map:'long',tl:[.1,.28,.46,.54,.72,.9],wl:[.2,.4,.6,.8],mine:'mid',build:1,theme:4,E:E9,unl:['u:at','f:atart'],feat:['tank','mortar','mg'],mgs:1,tk:{t0:0,gap:80,cap:1,prob:.8},es:1600,inc:1.1},
+ {de:['Panzerjagd','Der Gegner hat Panzer und Panzerabwehr. Nutze deine Panzerabwehr und die Anti-Tank-Artillerie. Danach bekommst du einen eigenen Panzer.'],en:['Tank hunt','The enemy has tanks and anti-tank guns. Use your anti-tank guns and anti-tank artillery. Afterwards you get a tank of your own.'],diff:'normal',ai:'bal',map:'long',tl:[.1,.28,.46,.54,.72,.9],wl:[.2,.4,.6,.8],mine:'mid',build:1,theme:0,E:E10,unl:['u:tank'],feat:['at','tank','mg'],tk:{t0:0,gap:75,cap:2,prob:.8},es:1600,inc:1.1},
+ {de:['Stahl gegen Stahl','Panzer gegen Panzer. Der Gegner schickt mehr davon. Setze deinen Panzer klug ein und verschanze dich dahinter. Danach bekommst du Gas.'],en:['Steel against steel','Tank against tank. The enemy sends more of them. Use your tank wisely and dig in behind it. Afterwards you get gas.'],diff:'normal',ai:'aggr',map:'long',tl:[.1,.25,.4,.6,.75,.9],wl:[.2,.4,.6,.8],mine:'mid',build:1,theme:3,E:E10,unl:['f:gas'],feat:['tank','at','raider'],tk:{t0:0,gap:70,cap:2,prob:.85},es:1600,inc:1.15},
+ {de:['Gaswolken','Der Gegner setzt Gas ein. Verlasse die Gräben nicht ohne Not und weiche den Wolken aus.'],en:['Gas clouds','The enemy uses gas. Do not leave the trenches without need and avoid the clouds.'],diff:'hard',ai:'def',map:'long',tl:[.1,.28,.46,.54,.72,.9],wl:[.2,.4,.6,.8],mine:'mid',build:1,theme:5,E:E12,unl:[],feat:['mg','gren','sniper'],mgs:1,tk:{t0:60,gap:110,cap:1,prob:.5},es:600,fsm:1.5,inc:1.15},
+ {de:['Nachtangriff','Im Dunkeln fehlen dir Panzer und Artillerie. Dafür hat der Gegner keinen Panzer. Setze auf Sniper, Mörser und Sturmtrupps.'],en:['Night raid','In the dark you have no tanks and no artillery. The enemy has no tank either. Rely on snipers, mortars and assault teams.'],diff:'hard',ai:'aggr',map:'long',tl:[.12,.3,.7,.88],wl:[.22,.5,.78],mine:'mid',build:1,theme:4,E:E12.filter(x=>x!=='u:tank'),ban:['u:tank','f:arty','f:atart'],unl:[],feat:['raider','sniper','gren'],inc:1.2},
+ {de:['Panzerdurchbruch','Der Gegner wirft Panzer in Wellen. Dir fehlen Sniper und Sturmtrupps. Nutze Panzerabwehr, Mörser und Artillerie.'],en:['Armoured breakthrough','The enemy throws tanks at you in waves. You have no snipers and no assault teams. Use anti-tank guns, mortars and artillery.'],diff:'hard',ai:'def',map:'long',tl:[.1,.28,.46,.54,.72,.9],wl:[.2,.4,.6,.8],mine:'mid',build:1,theme:3,E:E12,ban:['u:sniper','u:raider'],unl:[],feat:['tank','at','mortar'],tk:{t0:0,gap:55,cap:3,prob:.9},es:1500,inc:1.2},
+ {de:['Gasangriff','Gas und Artillerie in Massen. Der Gegner hat kaum noch Panzer, du auch nicht. Halte durch und schlage zurück.'],en:['Gas attack','Gas and artillery in masses. The enemy has few tanks and so do you. Hold out and strike back.'],diff:'hard',ai:'bal',map:'long',tl:[.1,.25,.4,.6,.75,.9],wl:[.2,.4,.6,.8],mine:'many',build:1,theme:0,E:E12,ban:['u:tank'],unl:[],feat:['gren','mg','mortar'],fsm:1.8,inc:1.2},
+ {de:['Der Durchbruch','Alle Mittel sind frei. Brich die letzte Linie des Gegners.'],en:['The breakthrough','All assets are available. Break the enemy’s last line.'],diff:'hard',ai:'aggr',map:'long',tl:[.08,.22,.36,.64,.78,.92],wl:[.15,.3,.5,.7,.85],mine:'many',build:1,theme:3,all:1,E:E12,unl:[],feat:['tank','at','mg','mortar','gren','raider'],mgs:1,tk:{t0:0,gap:60,cap:3,prob:.9},es:1500,fsm:1.5,inc:1.25}
+];
 function setOf(list){const u={rifle:1},f={};for(const x of list){const[k,v]=x.split(':');(k==='u'?u:f)[v]=1;}return{u,f};}
-function campSet(n){const l=[];for(let i=0;i<n-1&&i<UN.length;i++)for(const x of UN[i])l.push(x);return setOf(l);}
-function enemySet(i){
-  const m=MIS[i];if(m.all)return setOf(UN.flat());
-  if(m.E)return setOf(m.E.concat(UN.slice(0,Math.max(0,i-1)).flat().filter(x=>x==='u:gren'&&0)));
-  const l=[];for(let j=0;j<=i-1&&j<UN.length;j++)for(const x of UN[j])l.push(x);return setOf(l);
-}
-function playerSet(i){return MIS[i].all?setOf(UN.flat()):campSet(i);}
+const UL=n=>{const l=[];for(let j=0;j<n&&j<MIS.length;j++)for(const x of MIS[j].unl||[])l.push(x);return l;};   /* bis Mission n freigeschaltet */
+function campSet(n){return setOf(UL(n));}
+function playerSet(i){const m=MIS[i];if(m.all)return setOf(E12);let l=UL(i);if(m.ban)l=l.filter(x=>!m.ban.includes(x));return setOf(l);}
+function enemySet(i){return setOf(MIS[i].E);}
 const FLAG_UK='<svg class="fl" viewBox="0 0 60 36" aria-hidden="true"><rect width="60" height="36" fill="#1f3a6e"/><path d="M0 0L60 36M60 0L0 36" stroke="#fff" stroke-width="7"/><path d="M0 0L60 36M60 0L0 36" stroke="#c8102e" stroke-width="2.6"/><path d="M30 0V36M0 18H60" stroke="#fff" stroke-width="11"/><path d="M30 0V36M0 18H60" stroke="#c8102e" stroke-width="6"/></svg>';
 const FLAG_DE='<svg class="fl" viewBox="0 0 60 36" aria-hidden="true"><rect width="60" height="12" fill="#151515"/><rect y="12" width="60" height="12" fill="#e4e1d8"/><rect y="24" width="60" height="12" fill="#9d1b1b"/></svg>';
 const flagOf=t=>t===0?FLAG_UK:FLAG_DE;
@@ -4352,12 +4394,12 @@ function campAvail(k){
 const campUnl=k=>{const l=CAMP.lv,p=UPAR[k];if(p)return(l[p]||0)>=1;const r=UREQ[k];return !r||(l[r[0]]||0)>=r[1];};
 function campEnd(win){
   const i=campBattle,first=win&&CAMP.done===i;let xp=stats.xp||0,bonus=0;
-  if(first){bonus=20+5*i;CAMP.done=i+1;if(i>=1&&UN[i-1])for(const x of UN[i-1])campMsg.push(x);if(i===MIS.length-1)campMsg.push('won');}
+  if(first){bonus=20+5*i;CAMP.done=i+1;for(const x of (MIS[i].unl||[]))campMsg.push(x);if(i===MIS.length-1)campMsg.push('won');}
   campAddXp(xp+bonus);campSave();
   return xp+(bonus?' + '+bonus:'');
 }
 function campExit(){
-  campBattle=null;try{Object.assign(OPT,JSON.parse(OPT_SAVED));}catch(e){}
+  tutEnd();campBattle=null;campM=null;try{Object.assign(OPT,JSON.parse(OPT_SAVED));}catch(e){}
   for(const k of ['tl','wl','theme','early','eu','efs'])delete OPT[k];
   state='menu';inGame=false;$('end').hidden=true;$('paused').hidden=true;$('bBack').hidden=true;$('menu').hidden=true;
   campSel=Math.min(CAMP.done,MIS.length-1);campShow('map');
@@ -4370,12 +4412,14 @@ function campLaunch(i){
   OPT.units={};for(const k of UNIT_ORDER)OPT.units[k]=S.u[k]?1:0;
   OPT.fs={};for(const k of FS_ORD)OPT.fs[k]=S.f[k]?1:0;
   OPT.eu={};for(const k of UNIT_ORDER)OPT.eu[k]=E.u[k]?1:0;OPT.efs={};for(const k of FS_ORD)OPT.efs[k]=E.f[k]?1:0;
-  campBattle=i;startGame();
+  campBattle=i;campM=m;startGame();
+  sup[AIT]+=m.es||0;
   setBanner(MIS[i][lang==='en'?'en':'de'][0]);
+  if(m.tut)tutStart();
 }
 function campShow(sc){campScr=sc;$('camp').hidden=false;campRender();}
 const BG_SVG='<svg class="bg" viewBox="0 0 100 60" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#4d4836" stroke-width=".25" stroke-dasharray="1.2 1" opacity=".7"><path d="M20 0C14 14 30 24 22 38S16 52 22 60"/><path d="M34 0C28 10 40 22 36 34S30 50 34 60"/><path d="M48 0C44 16 56 26 50 40S46 54 50 60"/><path d="M62 0C58 12 70 24 64 36S60 52 66 60"/><path d="M76 0C72 14 84 26 78 40S74 54 80 60"/><path d="M90 0C86 10 96 24 92 36S88 50 92 60"/></g><path d="M0 14C25 10 40 20 60 17S90 16 100 20" fill="none" stroke="#5d6c78" stroke-width="1" opacity=".5"/><path d="M0 34C30 30 50 38 70 34S92 32 100 36" fill="none" stroke="#6b6450" stroke-width=".35" opacity=".8"/></svg>';
-const MPOS=[[17,24],[25,60],[33,28],[41,64],[50,26],[59,62],[67,28],[75,64],[83,26]];
+const MPOS=MIS.map((_,i)=>[14+i*(72/(MIS.length-1)),[14,34,54,74,90][i%5]]);
 function campRender(){
   const el=$('campCard');let h='';
   if(campScr==='front'){
@@ -4448,6 +4492,103 @@ $('camp').addEventListener('click',e=>{
   else if(a[0]==='m'&&/^m\d+$/.test(a)){campSel=+a.slice(1);campRender();}
   else if(a.slice(0,2)==='b_'){const k=a.slice(2),l=CAMP.lv[k]||0,c=campCost(k,l);if(campAvail(k)&&campUnl(k)&&l<campMax(k)&&CAMP.pts>=c){CAMP.pts-=c;CAMP.lv[k]=l+1;campSave();const sc=$('camp').scrollTop;campRender();$('camp').scrollTop=sc;}}
 });
+
+/* ---------- Tutorial (Kampagne, Mission 1) ---------- */
+let lastPT=(window.matchMedia&&matchMedia('(hover:none) and (pointer:coarse)').matches)?'touch':'mouse';
+document.addEventListener('pointerdown',e=>{lastPT=e.pointerType==='touch'?'touch':'mouse';},true);
+const trOK=()=>TUT.tr&&trenches.includes(TUT.tr);
+const TUT_STEPS=[
+ {id:'scroll',hold:false,arrows:true,soft:true,done:()=>TUT.camMax>=170},
+ {id:'back',hold:false,arrows:true,soft:true,done:()=>TUT.camMax>=170&&Math.abs(cam-TUT.cam0)<45},
+ {id:'sup',hold:true,btn:true,glow:()=>$('sup').parentElement},
+ {id:'buy',hold:true,glow:()=>{const it=barItems.find(i=>i.kind==='u'&&i.k==='rifle');return it?it.btn:null;},done:()=>queue.some(q=>q.team===PL)||units.some(u=>u.team===PL&&u.hp>0)},
+ {id:'march',hold:false,soft:true,done:()=>units.some(u=>u.team===PL&&u.hp>0&&u.inT)||TUT.stepT>75},
+ {id:'trench',hold:true,btn:true,enter:()=>{TUT.tr=trenches.find(tr=>tr.slots.some(s=>s.u&&s.u.team===PL))||trenches[0]||null;}},
+ {id:'tab',hold:true,needTr:true,hl:()=>TUT.tr.menu?null:'tab',done:()=>TUT.tr.menu},
+ {id:'menuinfo',hold:true,btn:true,needTr:true,hl:()=>TUT.tr.menu?null:'tab'},
+ {id:'menu',hold:true,needTr:true,enter:()=>{sup[PL]=Math.max(sup[PL],700);},hl:()=>TUT.tr.menu?'bags':'tab',done:()=>TUT.tr.bags>=1},
+ {id:'attack',hold:false,soft:true,needTr:true,enter:()=>{TUT.k0=stats.kills;const co=queueSquad(AIT,'rifle');for(const tr of trenches)co.passed.add(tr);},done:()=>stats.kills-TUT.k0>=3||TUT.stepT>50},
+ {id:'release',hold:true,needTr:true,hl:()=>TUT.tr.menu?'all':'tab',done:()=>!TUT.tr.cos.some(c=>c.team===PL)},
+ {id:'mgs',hold:true,btn:true},
+ {id:'lock',hold:true,btn:true},
+ {id:'goal',hold:true,btn:true}
+];
+const TUTX={
+ de:{step:'Schritt',skip:'Überspringen',next:'Weiter',
+  s:{
+   scroll:{t:'Willkommen an der Front',pc:'Die Karte ist breiter als dein Bildschirm. Bewege die Maus an den linken oder rechten Bildrand, nutze die Pfeiltasten oder A und D, oder ziehe die Karte mit gedrückter Maustaste.',tc:'Die Karte ist breiter als dein Bildschirm. Wische mit dem Finger nach links oder rechts, um sie zu verschieben.'},
+   back:{t:'Gut gemacht',pc:'Schiebe die Karte jetzt zurück zu deiner Basis ({side}).',tc:'Wische jetzt zurück zu deiner Basis ({side}).'},
+   sup:{t:'Nachschub',pc:'Oben links siehst du deinen Nachschub. Er wächst ständig und mit jedem Abschuss. Damit bezahlst du Einheiten.',tc:'Oben siehst du deinen Nachschub. Er wächst ständig und mit jedem Abschuss. Damit bezahlst du Einheiten.'},
+   buy:{t:'Trupp rufen',pc:'Klicke auf das leuchtende Symbol unten (oder drücke die Taste 1), um einen Schützentrupp zu rufen.',tc:'Tippe auf das leuchtende Symbol unten, um einen Schützentrupp zu rufen.'},
+   march:{t:'Der Trupp marschiert',pc:'Dein Trupp marschiert selbstständig zur Front und kämpft von allein. Du musst ihn nicht steuern. Schau ihm zu, bis er den Graben erreicht.',tc:'Dein Trupp marschiert selbstständig zur Front und kämpft von allein. Du musst ihn nicht steuern. Schau ihm zu, bis er den Graben erreicht.'},
+   trench:{t:'Im Graben',b:['Im Graben hat der Trupp Deckung: Er nimmt weniger Schaden und trifft besser.','Pro Graben passen nur wenige Trupps. Besetzte Gräben halten die Linie.','Auch der Gegner gräbt sich ein. Gräben bremsen jeden Vorstoß.','Gleich zeigen wir dir den Reiter, mit dem du den Graben steuerst.']},
+   tab:{t:'Der Graben-Reiter',pc:'Klicke auf den leuchtenden Reiter am Graben. Damit öffnest du das Grabenmenü.',tc:'Tippe auf den leuchtenden Reiter am Graben. Damit öffnest du das Grabenmenü.'},
+   menuinfo:{t:'Das Grabenmenü',b:['Die Trupp-Symbole zeigen, wer im Graben liegt. Der Balken ist der Zustand des Trupps.','Das Schloss sperrt den Graben: Deine Einheiten ignorieren ihn dann.','Die drei Pfeile schicken alle Trupps los, ein Trupp-Symbol nur diesen einen.','Die Sandsäcke bauen den Graben aus und geben mehr Deckung.']},
+   menu:{t:'Sandsäcke bauen',pc:'Klicke auf die leuchtenden Sandsäcke. Dafür haben wir dir genug Nachschub gegeben.',tc:'Tippe auf die leuchtenden Sandsäcke. Dafür haben wir dir genug Nachschub gegeben.'},
+   attack:{t:'Achtung, Angriff!',pc:'Der Gegner greift an. Dein Trupp verteidigt den Graben, die Sandsäcke geben ihm mehr Deckung. Schau zu.',tc:'Der Gegner greift an. Dein Trupp verteidigt den Graben, die Sandsäcke geben ihm mehr Deckung. Schau zu.'},
+   release:{t:'Vorrücken',pc:'Jetzt schickst du den Trupp wieder los: Öffne den Reiter und klicke auf die leuchtenden Pfeile (alle Trupps) oder auf ein Trupp-Symbol (nur diesen Trupp). So führst du auch einen Sturmangriff aus.',tc:'Jetzt schickst du den Trupp wieder los: Öffne den Reiter und tippe auf die leuchtenden Pfeile (alle Trupps) oder auf ein Trupp-Symbol (nur diesen Trupp). So führst du auch einen Sturmangriff aus.'},
+   mgs:{t:'MG-Stellung',b:['Im Grabenmenü baust du später eine MG-Stellung, sobald du MGs hast.','Ein MG-Trupp zieht dort selbstständig ein und belegt keinen normalen Grabenplatz.','Zum Räumen der Stellung gibt es im Menü ein eigenes Symbol: zweimal tippen, dann stürmt die MG-Besatzung heraus.']},
+   lock:{t:'Graben sperren',b:['Das Schloss im Grabenmenü sperrt den Graben für deine Einheiten.','Ein gesperrter Graben wird ignoriert, auch von MG-Trupps. So bleibt niemand an einer Stelle hängen, die du nicht willst.','Zum Entsperren tippst du das Schloss noch einmal.']},
+   goal:{t:'Dein Ziel',pc:'Der Balken oben zeigt, wie weit die Front vorgerückt ist. Besiege die Gegner, rufe weitere Trupps und schiebe die Linie bis zur gegnerischen Basis. Jeder Abschuss bringt Nachschub und Erfahrung (EP) für Upgrades.',tc:'Der Balken oben zeigt, wie weit die Front vorgerückt ist. Besiege die Gegner, rufe weitere Trupps und schiebe die Linie bis zur gegnerischen Basis. Jeder Abschuss bringt Nachschub und Erfahrung (EP) für Upgrades.'}
+  },left:'links',right:'rechts'},
+ en:{step:'Step',skip:'Skip',next:'Next',
+  s:{
+   scroll:{t:'Welcome to the front',pc:'The map is wider than your screen. Move the mouse to the left or right edge, use the arrow keys or A and D, or drag the map with the mouse button held down.',tc:'The map is wider than your screen. Swipe left or right with your finger to move it.'},
+   back:{t:'Well done',pc:'Now move the map back to your base ({side}).',tc:'Now swipe back to your base ({side}).'},
+   sup:{t:'Supplies',pc:'Top left you see your supplies. They grow constantly and with every kill. You pay for units with them.',tc:'At the top you see your supplies. They grow constantly and with every kill. You pay for units with them.'},
+   buy:{t:'Call a squad',pc:'Click the glowing icon at the bottom (or press key 1) to call a rifle squad.',tc:'Tap the glowing icon at the bottom to call a rifle squad.'},
+   march:{t:'The squad marches',pc:'Your squad marches to the front and fights on its own. You do not have to steer it. Watch until it reaches the trench.',tc:'Your squad marches to the front and fights on its own. You do not have to steer it. Watch until it reaches the trench.'},
+   trench:{t:'In the trench',b:['In a trench the squad has cover: it takes less damage and shoots better.','Each trench holds only a few squads. Occupied trenches hold the line.','The enemy digs in too. Trenches slow down every advance.','Next we show you the tab that controls the trench.']},
+   tab:{t:'The trench tab',pc:'Click the glowing tab at the trench. It opens the trench menu.',tc:'Tap the glowing tab at the trench. It opens the trench menu.'},
+   menuinfo:{t:'The trench menu',b:['The squad icons show who is in the trench. The bar is the squad’s condition.','The lock closes the trench: your units will ignore it.','The three arrows send all squads out, a squad icon only that one squad.','The sandbags upgrade the trench for more cover.']},
+   menu:{t:'Build sandbags',pc:'Click the glowing sandbags. We gave you enough supplies for it.',tc:'Tap the glowing sandbags. We gave you enough supplies for it.'},
+   attack:{t:'Watch out, an attack!',pc:'The enemy is attacking. Your squad defends the trench and the sandbags give it more cover. Watch.',tc:'The enemy is attacking. Your squad defends the trench and the sandbags give it more cover. Watch.'},
+   release:{t:'Advance',pc:'Now send the squad out again: open the tab and click the glowing arrows (all squads) or a squad icon (only that squad). This is also how you launch an assault.',tc:'Now send the squad out again: open the tab and tap the glowing arrows (all squads) or a squad icon (only that squad). This is also how you launch an assault.'},
+   mgs:{t:'MG position',b:['Later, once you have MGs, you can build an MG position in the trench menu.','An MG team moves in by itself and does not use a normal trench place.','To clear the position there is its own icon in the menu: tap twice and the MG crew storms out.']},
+   lock:{t:'Locking a trench',b:['The lock in the trench menu closes the trench to your units.','A locked trench is ignored, MG teams included. Nobody gets stuck where you do not want them.','Tap the lock again to unlock.']},
+   goal:{t:'Your goal',pc:'The bar at the top shows how far the front has advanced. Defeat the enemy, call more squads and push the line to the enemy base. Every kill brings supplies and experience (XP) for upgrades.',tc:'The bar at the top shows how far the front has advanced. Defeat the enemy, call more squads and push the line to the enemy base. Every kill brings supplies and experience (XP) for upgrades.'}
+  },left:'left',right:'right'}
+};
+function tutStart(){
+  sup[PL]=Math.max(sup[PL],330);
+  TUT={i:0,stepT:0,cam0:cam,camMax:0,key:'',tr:null,hl:null,k0:0};tutHold=false;tutEnter();tutRender();
+}
+function tutEnd(){TUT=null;tutHold=false;tutHide();}
+function tutHide(){
+  const b=$('tut'),a=$('tutArr');if(b){b.hidden=true;b.innerHTML='';}if(a)a.hidden=true;
+  document.querySelectorAll('.tutglow').forEach(e=>e.classList.remove('tutglow'));
+}
+function tutEnter(){const s=TUT_STEPS[TUT.i];TUT.hl=null;if(s&&s.enter)s.enter();}
+function tutNext(){if(!TUT)return;TUT.i++;TUT.stepT=0;TUT.key='';if(TUT.i>=TUT_STEPS.length){tutEnd();return;}tutEnter();tutRender();}
+function tutRender(){
+  if(!TUT)return;
+  const s=TUT_STEPS[TUT.i],L=TUTX[lang]||TUTX.de,d=lastPT==='touch'?'tc':'pc',c=L.s[s.id],b=$('tut');
+  TUT.key=TUT.i+'|'+lang+'|'+lastPT;
+  const side=PL===0?L.left:L.right;
+  const T=x=>typeof x==='string'?x:x[d];
+  let h='<div class="th"><span>'+L.step+' '+(TUT.i+1)+'/'+TUT_STEPS.length+'</span><button type="button" data-t="skip">'+L.skip+'</button></div><h4>'+c.t+'</h4>';
+  if(c.b)h+='<ul>'+c.b.map(x=>'<li>'+T(x)+'</li>').join('')+'</ul>';
+  else h+='<p>'+(c[d]||c.pc).replace('{side}',side)+'</p>';
+  if(s.btn||s.soft)h+='<button type="button" class="tb" data-t="next">'+L.next+'</button>';
+  b.innerHTML=h;b.hidden=false;$('tutArr').hidden=!s.arrows;
+}
+function tutTick(dt){
+  if(!TUT)return;
+  if(state==='end'||state==='menu'){tutEnd();return;}
+  if(state!=='play')return;
+  const s=TUT_STEPS[TUT.i];
+  TUT.stepT+=dt;TUT.camMax=Math.max(TUT.camMax,Math.abs(cam-TUT.cam0));
+  tutHold=!!s.hold;
+  if(s.needTr&&!trOK()){tutNext();return;}
+  TUT.hl=s.hl?s.hl():null;
+  if(s.hl&&TUT.tr){const tg=clamp(TUT.tr.x-VW/2,0,maxCam());if(Math.abs(TUT.tr.x-(cam+VW/2))>VW*.28)cam+=(tg-cam)*Math.min(1,dt*6);}   /* Kamera zum Graben führen, falls er nicht im Bild ist */
+  if(TUT.key!==TUT.i+'|'+lang+'|'+lastPT)tutRender();
+  const g=s.glow?s.glow():null;
+  document.querySelectorAll('.tutglow').forEach(e=>{if(e!==g)e.classList.remove('tutglow');});
+  if(g&&!g.classList.contains('tutglow'))g.classList.add('tutglow');
+  if(s.done&&s.done())tutNext();
+}
+$('tut').addEventListener('click',e=>{const a=e.target.closest('[data-t]');if(!a)return;if(a.dataset.t==='skip')tutEnd();else tutNext();});
 
 campLoad();loadSettings();reset();resize();buildSprites();buildBg();setLang(OPT.lang||'de');Snd.setOn(soundOn);refreshLoad();campShow('front');
 window.__SCHLAMM_DBG={sheet2:(list,tm,k)=>{const c=document.createElement('canvas');c.width=1400;c.height=260;const g=c.getContext('2d');g.fillStyle='#8a7550';g.fillRect(0,0,1400,260);let x=4;for(const[role,key]of list){let s=SP.spr[tm][role][key];const arr=Array.isArray(s)&&(key==='bolt'||key==='load')?s:[Array.isArray(s)?s[0]:s];for(const q of arr){if(!q)continue;g.drawImage(q.c,x,10,q.w*k,q.h*k);x+=q.w*k+6;}}return c.toDataURL();},sheet:()=>{const c=document.createElement('canvas');c.width=1000;c.height=110;const g=c.getContext('2d');g.fillStyle='#8a7550';g.fillRect(0,0,1000,110);let x=4;for(const tm of [0,1])for(const[role,key]of[['mortar','walk'],['mortar','fold'],['mortar','aim'],['mg','walk'],['mg','fold'],['mg','aim'],['rifle','push'],['raider','melee']]){let s=SP.spr[tm][role][key];if(Array.isArray(s))s=s[0];g.drawImage(s.c,x,10,s.w*1.6,s.h*1.6);x+=s.w*1.6+4;}return c.toDataURL();},ub:k=>{sup[PL]=1e5;buyUpgrade(k);},up:(i,k)=>{sup[PL]=1e5;return trenchUp(trenches[i],k);},go:()=>{cam=Math.max(0,trenches[0].x-350);}};
