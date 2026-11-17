@@ -1,6 +1,7 @@
 /* Warfare – Service Worker: Spiel läuft nach dem ersten Laden auch offline.
-   Bei einer neuen Version VERSION erhöhen, dann wird der Cache erneuert. */
-const VERSION='warfare-7_31';
+   Seite und Skripte: immer zuerst vom Server (neue Version sofort sichtbar), Cache nur als Offline-Reserve.
+   Icons und Schriften: aus dem Cache. Die Version muss nicht mehr hochgezählt werden. */
+const VERSION='warfare-sw2';
 const CORE=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png','icon-maskable-512.png','icon-180.png'];
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(VERSION).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));
@@ -14,12 +15,20 @@ self.addEventListener('fetch',e=>{
   const u=new URL(r.url);
   const own=u.origin===location.origin,font=/fonts\.(googleapis|gstatic)\.com$/.test(u.hostname);
   if(!own&&!font)return;
-  /* Eigene Dateien und Schriften: erst Cache, parallel im Hintergrund aktualisieren */
+  const page=own&&(r.mode==='navigate'||/\.(html|js|webmanifest)$/.test(u.pathname)||u.pathname.endsWith('/'));
+  if(page){
+    /* Netzwerk zuerst (am HTTP-Cache vorbei), bei Fehler offline aus dem Cache */
+    e.respondWith(fetch(r,{cache:'no-cache'}).then(res=>{
+      if(res&&res.ok){const cp=res.clone();caches.open(VERSION).then(c=>c.put(r,cp));}
+      return res;
+    }).catch(()=>caches.open(VERSION).then(c=>c.match(r,{ignoreSearch:true}).then(h=>h||(r.mode==='navigate'?c.match('index.html'):Response.error())))));
+    return;
+  }
+  /* Icons und Schriften: erst Cache, im Hintergrund aktualisieren */
   e.respondWith(caches.open(VERSION).then(async c=>{
     const hit=await c.match(r,{ignoreSearch:true});
     const net=fetch(r).then(res=>{if(res&&(res.ok||res.type==='opaque'))c.put(r,res.clone());return res;}).catch(()=>null);
     if(hit){e.waitUntil(net);return hit;}
-    const res=await net;
-    return res||(r.mode==='navigate'?c.match('index.html'):Response.error());
+    return (await net)||Response.error();
   }));
 });
